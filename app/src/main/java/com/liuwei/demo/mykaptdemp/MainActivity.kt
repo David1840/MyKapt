@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.TextView
 import com.liuwei.demo.annotation.MyClass
 import com.liuwei.demo.annotation.findView
+import com.liuwei.demo.mykaptapi.MyKapt
 
 
 @MyClass
@@ -19,7 +20,7 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        MyActivity.bindView(this)
+        MyKapt.bindView(this)
         text123?.text = "gjagdkajsdgaklsjdg"
         text2?.text = "hahahahahahahahaha"
     }

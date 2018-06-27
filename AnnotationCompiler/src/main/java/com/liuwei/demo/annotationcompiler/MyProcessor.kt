@@ -41,21 +41,21 @@ class MyProcessor : AbstractProcessor() {
             val typeElement = it as TypeElement
             val members = elementUtils!!.getAllMembers(typeElement)
 
-            val bindFunBuilder = FunSpec.builder("bindView").addParameter("activity", typeElement.asClassName())
+            val bindFunBuilder = FunSpec.builder("bindView").addParameter("activity", typeElement.asClassName()).addAnnotation(JvmStatic::class.java)
 
 
             members.forEach {
                 val find: findView? = it.getAnnotation(findView::class.java)
                 if (find != null) {
-                    mLogger.info(" " + find.value + " " + it.simpleName + " " + it.asType())
+                    mLogger.info("find annotation " + it.simpleName)
                     bindFunBuilder.addStatement("activity.${it.simpleName} = activity.findViewById(${find.value})")
                 }
             }
             val bindFun = bindFunBuilder.build()
 
 
-            val file = FileSpec.builder(getPackageName(typeElement), "MyActivity")
-                    .addType(TypeSpec.classBuilder("MyActivity")
+            val file = FileSpec.builder(getPackageName(typeElement), it.simpleName.toString()+"_bindView")
+                    .addType(TypeSpec.classBuilder(it.simpleName.toString()+"_bindView")
                             .addType(TypeSpec.companionObjectBuilder()
                                     .addFunction(bindFun)
                                     .build())
@@ -64,49 +64,17 @@ class MyProcessor : AbstractProcessor() {
             file.writeFile()
         }
 
-//        val companion = TypeSpec.companionObjectBuilder()
-//                .addProperty(PropertySpec.builder("buzz", String::class)
-//                        .initializer("%S", "buzz")
-//                        .build())
-//                .addFunction(FunSpec.builder("beep")
-//                        .addStatement("println(%S)", "Beep!")
-//                        .build())
-//                .build()
-//
-//        val helloWorld = FileSpec.builder("","HelloWorld")
-//                .addType(companion)
-//                .build()
-//        helloWorld.writeFile()
-
-
-//                .addType(TypeSpec.classBuilder("Greeter")
-//                        .primaryConstructor(FunSpec.constructorBuilder()
-//                                .addParameter("name", String::class)
-//                                .build())
-//                        .addProperty(PropertySpec.builder("name", String::class)
-//                                .initializer("name")
-//                                .build())
-//                        .addFunction(FunSpec.builder("greet")
-//                                .addStatement("println(%S)", "Hello, \$name")
-//                                .build())
-//                        .build())
-//                .addFunction(FunSpec.builder("main")
-//                        .addParameter("args", String::class, KModifier.VARARG)
-//                        .addStatement("%T(args[0]).greet()", greeterClass)
-//                        .build())
-//                .build()
-
         mLogger.info("end")
 
         return true
     }
 
 
-    fun getPackageName(type: TypeElement): String {
+    private fun getPackageName(type: TypeElement): String {
         return elementUtils!!.getPackageOf(type).qualifiedName.toString()
     }
 
-    fun FileSpec.writeFile() {
+    private fun FileSpec.writeFile() {
 
         val kaptKotlinGeneratedDir = processingEnv.options["kapt.kotlin.generated"]
         val outputFile = File(kaptKotlinGeneratedDir).apply {

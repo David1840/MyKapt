@@ -1,1 +1,1 @@
-include ':app', ':AnnotationCompiler', ':Annotation'
+include ':app', ':AnnotationCompiler', ':Annotation', ':MyKaptApi'
